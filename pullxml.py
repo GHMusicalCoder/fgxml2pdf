@@ -3,6 +3,8 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ET
 import loaddata
+import xmlfuncs
+
 
 def pull_xml(file):
     players = []
@@ -19,10 +21,6 @@ def pull_xml(file):
         # print(children.tag, children.attrib)
         if children.tag == 'abilities':
             proc_abilities(children, data, score_mods)
-        elif children.tag == 'age':
-            data.append(('Age', children.text))
-        elif children.tag == 'alignment':
-            data.append(('Alignment', children.text))
         elif children.tag == 'appearance':
             items = [i.strip() for i in children.text.split('*')]
             for item in items:
@@ -33,28 +31,16 @@ def pull_xml(file):
                     data.append(('Eyes', it[1]))
                 elif it[0] == 'Skin':
                     data.append(('Skin', it[1]))
-        elif children.tag == 'background':
-            data.append(('Background', children.text))
-        elif children.tag == 'bonds':
-            data.append(('Bonds', children.text))
         elif children.tag == 'classes':
             proc_classes(children, data)
         elif children.tag == 'coins':
             proc_coins(children, data)
         elif children.tag == 'defenses':
             data.append(('AC', get_listed_items(children[0], 'total')))
-        elif children.tag == 'deity':
-            data.append(('FactionName', children.text))
         elif children.tag == 'featurelist':
             proc_features(children, features)
-        elif children.tag == 'flaws':
-            data.append(('Flaws', children.text))
-        elif children.tag == 'height':
-            data.append(('Height', children.text))
         elif children.tag == 'hp':
             data.append(('HPMax', get_listed_items(children, 'total')))
-        elif children.tag == 'ideals':
-            data.append(('Ideals', children.text))
         elif children.tag == 'initiative':
             data.append(('Initiative', '+' + get_listed_items(children, 'total')))
         elif children.tag == 'inventorylist':
@@ -65,17 +51,11 @@ def pull_xml(file):
             data.append(('CharacterName', children.text))
             data.append(('CharacterName 2', children.text))
             data.append(('PlayerName', proc_playername(players, children.text)))
-        elif children.tag == 'perception':
-            data.append(('Passive', children.text))
-        elif children.tag == 'personalitytraits':
-            data.append(('PersonalityTraits ', children.text))
         elif children.tag == 'profbonus':
             data.append(('ProfBonus', '+' + children.text))
             score_mods[0] = int(children.text)
         elif children.tag == 'proficiencylist':
             lang_prof += proc_languages_proficiencies(children)
-        elif children.tag == 'race':
-            data.append(('Race ', children.text))
         elif children.tag == 'senses':
             features.append(children.text + '\n')
         elif children.tag == 'skilllist':
@@ -84,6 +64,8 @@ def pull_xml(file):
             proc_features(children, features)
         elif children.tag == 'weaponlist':
             proc_weapons(children, data, weapons, score_mods)
+        else:
+            xmlfuncs.process_normal_node(children.tag, children.text, data)
 
     data.append(('Features and Traits', '\n'.join(features)))
     data.append(('ProficienciesLang', lang_prof))

@@ -4,9 +4,11 @@ except ImportError:
     import xml.etree.ElementTree as ET
 import loaddata
 import xmlfuncs
+from collections import defaultdict
 
 
 def pull_xml(file):
+    character = design_blank_character()
     players = []
     data = []
     score_mods = [0, 0, 0, 0, 0, 0, 0]
@@ -113,18 +115,18 @@ def proc_weapons(children, func_data, wpns, adjustments):
 
         if dmg_mod > 0:
             temp = dmg_die.split(' ')
-            
-        # if dmg[0] == 'd':
-        #     damage = '1' + dmg
-        # else:
-        #     damage = dmg
-        # if dmod != '0':
-        #     damage += '+' + dmod
-        # damage += ' ' + dtype
-        # if c == 1:
-        #     func_data.append(('Wpn Name', wpn))
-        #     func_data.append(('Wpn1 AtkBonus', '+' + str(atk)))
-        #     func_data.append(('Wpn1 Damage', damage))
+
+            # if dmg[0] == 'd':
+            #     damage = '1' + dmg
+            # else:
+            #     damage = dmg
+            # if dmod != '0':
+            #     damage += '+' + dmod
+            # damage += ' ' + dtype
+            # if c == 1:
+            #     func_data.append(('Wpn Name', wpn))
+            #     func_data.append(('Wpn1 AtkBonus', '+' + str(atk)))
+            #     func_data.append(('Wpn1 Damage', damage))
 
 
 def proc_skills(children, func_data):
@@ -357,6 +359,56 @@ def proc_playername(players, char):
     for c, p in players:
         if char.lower() == c:
             return p
+
+
+def design_blank_character():
+    c = defaultdict(dict)
+    # build character info section
+    c['info'] = {'c_name': '', 'p_name': '', 'race': '', 'class': '', 'background': '', 'subrace': '', 'alignment': '',
+                 'weight': '', 'height': '', 'age': 0, 'level': 0, 'exp': 0, 'xp_next': 0, 'traits': '', 'ideals': '',
+                 'bonds': '', 'flaws': ''}
+    c['abilities'] = {'str': 0, 'dex': 0, 'con': 0, 'int': 0, 'wis': 0, 'cha': 0, 'prof': 0}
+    c['skills'] = {'acrobatics': {'mod': 0, 'prof': False}, 'animalhandling': {'mod': 0, 'prof': False},
+                   'arcana': {'mod': 0, 'prof': False}, 'athletics': {'mod': 0, 'prof': False},
+                   'deception': {'mod': 0, 'prof': False}, 'history': {'mod': 0, 'prof': False},
+                   'insight': {'mod': 0, 'prof': False}, 'intimidation': {'mod': 0, 'prof': False},
+                   'investigation': {'mod': 0, 'prof': False}, 'medicine': {'mod': 0, 'prof': False},
+                   'nature': {'mod': 0, 'prof': False}, 'perception': {'mod': 0, 'prof': False},
+                   'performance': {'mod': 0, 'prof': False}, 'persuasion': {'mod': 0, 'prof': False},
+                   'religion': {'mod': 0, 'prof': False}, 'sleightofhand': {'mod': 0, 'prof': False},
+                   'stealth': {'mod': 0, 'prof': False}, 'survival': {'mod': 0, 'prof': False}}
+    c['limits'] = {'hold_breath': 0, 'suffocate': 0, 'starve': 0, 'carry_max': 0, 'lift_max': 0, 'high_jump': 0,
+                   'long_jump': 0, 'crawl_swim': 0, 'daily_travel': 0}
+    c['health'] = {'max_hp': 0, 'd6': 0, 'd8': 0, 'd10': 0, 'd12': 0, 'condition1': '', 'condition2': '',
+                   'condition3': ''}
+    c['defense'] = {'ac': 0, 'use_shield': False, 'stealth_dis': False, 'str_save': {'mod': 0, 'prof': False},
+                    'dex_save': {'mod': 0, 'prof': False}, 'con_save': {'mod': 0, 'prof': False},
+                    'int_save': {'mod': 0, 'prof': False}, 'wis_save': {'mod': 0, 'prof': False},
+                    'cha_save': {'mod': 0, 'prof': False}, 'resistance1': '', 'resistance2': '', 'resistance3': ''}
+    c['combat'] = {'init': 0, 'speed': 0, 'num_atks': 0}
+    c['class_features'] = {'feature1': {'name': '', 'uses': 0, 'rest': ''},
+                           'feature2': {'name': '', 'uses': 0, 'rest': ''},
+                           'feature3': {'name': '', 'uses': 0, 'rest': ''},
+                           'feature4': {'name': '', 'uses': 0, 'rest': ''},
+                           'feature5': {'name': '', 'uses': 0, 'rest': ''},
+                           'feature6': {'name': '', 'uses': 0, 'rest': ''}}
+    c['weapons'] = {'weapon1': {'name': '', 'hit': 0, 'dmg': '', 'type': '', 'range': '', 'prop': ''},
+                    'weapon2': {'name': '', 'hit': 0, 'dmg': '', 'type': '', 'range': '', 'prop': ''},
+                    'weapon3': {'name': '', 'hit': 0, 'dmg': '', 'type': '', 'range': '', 'prop': ''},
+                    'weapon4': {'name': '', 'hit': 0, 'dmg': '', 'type': '', 'range': '', 'prop': ''},
+                    'weapon5': {'name': '', 'hit': 0, 'dmg': '', 'type': '', 'range': '', 'prop': ''},
+                    'weapon6': {'name': '', 'hit': 0, 'dmg': '', 'type': '', 'range': '', 'prop': ''}}
+    c['features'] = []
+    c['inventory'] = []
+    c['monies'] = {'pp': 0, 'gp': 0, 'ep': 0, 'sp': 0, 'cp': 0}
+    c['armor_prof'] = []
+    c['wpn_prof'] = []
+    c['tool_prof'] = []
+    c['languages'] = []
+    c['spells'] = {'cantrips': [], 'level1': [], 'level2': [], 'level3': [], 'level4': [], 'level5': [], 'level6': [],
+                   'level7': [], 'level8': [], 'level9': [], 'atk': 0, 'dc': 0, 'l0': 0, 'l1': 0, 'l2': 0, 'l3': 0,
+                   'l4': 0, 'l5': 0, 'l6': 0, 'l7': 0, 'l8': 0, 'l9': 0}
+    return c
 
 
 if __name__ == '__main__':

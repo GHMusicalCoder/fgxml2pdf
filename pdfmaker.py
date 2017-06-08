@@ -8,7 +8,7 @@ def main():
     os.chdir(path)
     # xml_filename = get_xml_filename() + ".xml"
     xml_filename = 'romulus.xml'
-    field_values = pullxml.pull_xml(xml_filename)
+    field_values = pullxml.process_xml_file(xml_filename)
     # pullxml.pull_xml(xml_filename)
     # print(*field_values)
     fdf_filename = 'fgoutput.fdf'

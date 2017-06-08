@@ -2,13 +2,97 @@ try:
     import xml.etree.cElementTree as ET
 except ImportError:
     import xml.etree.ElementTree as ET
-import loaddata
+from loaddata import load_name_data
 import xmlfuncs
 from collections import defaultdict
 
 
-def pull_xml(file):
+def process_xml_file(file):
     character = design_blank_character()
+    players = []
+    load_name_data('charname.txt', players)
+
+    xml = ET.parse(file)
+    root = xml.getroot()
+    tree = root[0]
+    for node in tree:
+        #load character info
+        if node.tag == 'age' or node.tag == 'level' or node.tag == 'exp' or node.tag == 'expneeded':
+            character['info'][node.tag] = int(node.text)
+        elif node.tag == 'alignment' or node.tag == 'background' or node.tag == 'bonds' or node.tag == 'flaws' or \
+        node.tag == 'height' or node.tag == 'ideals' or node.tag == 'weight' or node.tag == 'personalitytraits' or \
+        node.tag == 'name':
+            character['info'][node.tag] = node.text
+        elif node.tag == 'race':
+            if '(' in node.text:
+                temp = node.text.split('(')
+                character['info']['race'] = temp[0].strip()
+                character['info']['subrace'] = temp[1].strip(')')
+            else:       #no subrace
+                character['info']['race'] = node.text
+        elif node.tag == 'classes':
+            get_class_information(node, character)
+
+    character['info']['p_name'] = get_player_name(file, character['info']['name'])
+
+
+def get_player_name(file, name):
+    players = load_name_data(file)
+    for c, p in players:
+        if name.lower() == c:
+            return p
+    return 'NPC'
+
+
+def get_abbreviated_classes(classlist):
+    class_ = []
+    for c in classlist:
+        if c == 'Barbarian':
+            class_.append('Barb')
+        elif c == 'Cleric':
+            class_.append('Clrc')
+        elif c == 'Druid':
+            class_.append('Drd')
+        elif c == 'Fighter':
+            class_.append('Ftr')
+        elif c == 'Paladin':
+            class_.append('Pal')
+        elif c == 'Ranger':
+            class_.append('Rng')
+        elif c == 'Rogue':
+            class_.append('Rog')
+        elif c == 'Sorcerer':
+            class_.append('Sorc')
+        elif c == 'Warlock':
+            class_.append('Wrlk')
+        elif c == 'Wizard':
+            class_.append('Wiz')
+        else:
+            class_.append(c)
+    return '/'.join(class_)
+
+
+def get_class_information(tree, char):
+    #class info affects info and health (hit die)
+    dtype = ''
+    hdnum = 0
+    classes = []
+    for branch in tree:         #should take us to id# in classes
+        for node in branch:     #should take us to the individual class detail
+            if node.tag == 'hddie':
+                dtype = node.text
+            elif node.tag == 'level':
+                hdnum = int(node.text)
+            elif node.tag == 'name':
+                classes.append(node.text)
+        char['health'][dtype] += hdnum
+        if len(classes) > 1:
+            char['info']['class'] = get_abbreviated_classes(classes)
+        else:
+            char['info']['class'] = classes[0]
+
+
+def pull_xml_old(file):
     players = []
     data = []
     score_mods = [0, 0, 0, 0, 0, 0, 0]
@@ -364,9 +448,9 @@ def proc_playername(players, char):
 def design_blank_character():
     c = defaultdict(dict)
     # build character info section
-    c['info'] = {'c_name': '', 'p_name': '', 'race': '', 'class': '', 'background': '', 'subrace': '', 'alignment': '',
-                 'weight': '', 'height': '', 'age': 0, 'level': 0, 'exp': 0, 'xp_next': 0, 'traits': '', 'ideals': '',
-                 'bonds': '', 'flaws': ''}
+    c['info'] = {'name': '', 'p_name': '', 'race': '', 'class': '', 'background': '', 'subrace': '', 'alignment': '',
+                 'weight': '', 'height': '', 'age': 0, 'level': 0, 'exp': 0, 'expneeded': 0, 'personalitytraits': '',
+                 'ideals': '', 'bonds': '', 'flaws': ''}
     c['abilities'] = {'str': 0, 'dex': 0, 'con': 0, 'int': 0, 'wis': 0, 'cha': 0, 'prof': 0}
     c['skills'] = {'acrobatics': {'mod': 0, 'prof': False}, 'animalhandling': {'mod': 0, 'prof': False},
                    'arcana': {'mod': 0, 'prof': False}, 'athletics': {'mod': 0, 'prof': False},

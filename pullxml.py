@@ -33,6 +33,12 @@ def process_xml_file(file):
             populate_abilities(node, character)
         elif node.tag == 'coins':
             populate_monies(node, character['monies'])
+        elif node.tag == 'defenses':
+            populate_defense(node[0], character['defense'])
+        elif node.tag == 'encumbrance':
+            populate_limits(node, character)
+        elif node.tag == 'featlist':
+            populate_feats(node, character)
 
     character['info']['p_name'] = get_player_name('charname.txt', character['info']['name'])
     #test
@@ -40,6 +46,61 @@ def process_xml_file(file):
     print(character['abilities'])
     print(character['monies'])
     print(character['defense'])
+    print(character['skills'])
+    print(character['limits'])
+    print(character['health'])
+    print(character['combat'])
+    print(character['class_features'])
+    print(character['weapons'])
+    print(character['features'])
+    print(character['inventory'])
+    print(character['monies'])
+    print(character['armor_prof'])
+    print(character['wpn_prof'])
+    print(character['tool_prof'])
+    print(character['languages'])
+    print(character['spells'])
+
+
+def populate_feats(tree, char):
+    for node in tree:
+        name = ''
+        desc = ''
+        for feat in node:
+            if feat.tag == 'name':
+                name = feat.text
+                if name == 'Alert':
+                    char['combat']['init_mod'] += 5
+            elif feat.tag == 'text':
+                for text in feat:
+                    if text.tag == 'p':
+                        desc = text.text
+                    elif text.tag == 'list':
+                        for list in text:
+                            desc += '\n  ' + list.text
+        char['features'].append(name + ' : ' + desc)
+
+
+def populate_limits(tree, char):
+    for node in tree:
+        if node.tag == 'max':
+            char['limits']['carry_max'] = int(node.text)
+        elif node.tag == 'liftpushdrag':
+            char['limits']['lift_max'] = int(node.text)
+        elif node.tag == 'load':
+            char['inventory']['tot_weight'] = float(node.text)
+
+
+def populate_defense(tree, char):
+    for node in tree:
+        if node.tag == 'total':
+            char['ac'] = int(node.text)
+        elif node.tag == 'shield':
+            if node.text != '0':
+                char['use_shield'] = True
+        elif node.tag == 'disstealth':
+            if node.text == '1':
+                char['stealth_dis'] = True
 
 
 def populate_monies(coins, money):
@@ -314,103 +375,12 @@ def get_listed_items(children, name):
             return child.text
 
 
-def proc_abilities(children, func_data, scores):
-    for child in children:
-        if child.tag == 'charisma':
-            scores[6] = int(child[0].text)
-            func_data.append(('CHA', child[4].text))
-            func_data.append(('CHamod', '+' + child[0].text))
-            func_data.append(('ST Charisma', '+' + child[1].text))
-            if child[3].text == '1':
-                func_data.append(('Check Box 22', 'Yes'))
-        elif child.tag == 'constitution':
-            scores[3] = int(child[0].text)
-            func_data.append(('CON', child[4].text))
-            func_data.append(('CONmod', '+' + child[0].text))
-            func_data.append(('ST Constitution', '+' + child[1].text))
-            if child[3].text == '1':
-                func_data.append(('Check Box 19', 'Yes'))
-        elif child.tag == 'dexterity':
-            scores[2] = int(child[0].text)
-            func_data.append(('DEX', child[4].text))
-            func_data.append(('DEXmod ', '+' + child[0].text))
-            func_data.append(('ST Dexterity', '+' + child[1].text))
-            if child[3].text == '1':
-                func_data.append(('Check Box 18', 'Yes'))
-        elif child.tag == 'intelligence':
-            scores[4] = int(child[0].text)
-            func_data.append(('INT', child[4].text))
-            func_data.append(('INTmod', '+' + child[0].text))
-            func_data.append(('ST Intelligence', '+' + child[1].text))
-            if child[3].text == '1':
-                func_data.append(('Check Box 20', 'Yes'))
-        elif child.tag == 'strength':
-            scores[1] = int(child[0].text)
-            func_data.append(('STR', child[4].text))
-            func_data.append(('STRmod', '+' + child[0].text))
-            func_data.append(('ST Strength', '+' + child[1].text))
-            if child[3].text == '1':
-                func_data.append(('Check Box 11', 'Yes'))
-        elif child.tag == 'wisdom':
-            scores[5] = int(child[0].text)
-            func_data.append(('WIS', child[4].text))
-            func_data.append(('WISmod', '+' + child[0].text))
-            func_data.append(('ST Wisdom', '+' + child[1].text))
-            if child[3].text == '1':
-                func_data.append(('Check Box 21', 'Yes'))
-
-
-def proc_classes(children, func_data):
-    if len(children) > 1:
-        print('Error: cannot handle multiclassing right now')
-        exit()
-    else:
-        level = get_listed_items(children[0], 'level')
-        class_level = get_listed_items(children[0], 'name')
-        class_level += " " + level
-        hdtot = level + get_listed_items(children[0], 'hddie')
-        func_data.append(('ClassLevel', class_level))
-        func_data.append(('HDTotal', hdtot))
-
-
-def proc_coins(children, func_data):
-    coins = [0, 0, 0, 0, 0]
-    for child in children:
-        proc_coin_name(child, coins)
-    func_data.append(('CP', str(coins[0])))
-    func_data.append(('SP', str(coins[1])))
-    func_data.append(('EP', str(coins[2])))
-    func_data.append(('GP', str(coins[3])))
-    func_data.append(('PP', str(coins[4])))
-
-
-def proc_coin_name(child, coins):
-    if len(child) > 1:
-        name = child[1].text
-        if name == 'Copper' or name == 'CP':
-            coins[0] = int(child[0].text)
-        if name == 'Silver' or name == 'SP':
-            coins[1] = int(child[0].text)
-        if name == 'Electrum' or name == 'EP':
-            coins[2] = int(child[0].text)
-        if name == 'Gold' or name == 'GP':
-            coins[3] = int(child[0].text)
-        if name == 'Platinum' or name == 'PP':
-            coins[4] = int(child[0].text)
-
-
 def proc_features(children, feat):
     for child in children:
         for kid in child:
             if kid.tag == 'name':
                 feat.append(kid.text)
     feat[-1] = feat[-1] + '\n'
-
-
-def proc_playername(players, char):
-    for c, p in players:
-        if char.lower() == c:
-            return p
 
 
 def design_blank_character():
@@ -438,7 +408,7 @@ def design_blank_character():
                     'dex_save': {'mod': 0, 'prof': False}, 'con_save': {'mod': 0, 'prof': False},
                     'int_save': {'mod': 0, 'prof': False}, 'wis_save': {'mod': 0, 'prof': False},
                     'cha_save': {'mod': 0, 'prof': False}, 'resistance1': '', 'resistance2': '', 'resistance3': ''}
-    c['combat'] = {'init': 0, 'speed': 0, 'num_atks': 0}
+    c['combat'] = {'init': 0, 'speed': 0, 'num_atks': 0, 'init_mod': 0}
     c['class_features'] = {'feature1': {'name': '', 'uses': 0, 'rest': ''},
                            'feature2': {'name': '', 'uses': 0, 'rest': ''},
                            'feature3': {'name': '', 'uses': 0, 'rest': ''},
@@ -452,7 +422,7 @@ def design_blank_character():
                     'weapon5': {'name': '', 'hit': 0, 'dmg': '', 'type': '', 'range': '', 'prop': ''},
                     'weapon6': {'name': '', 'hit': 0, 'dmg': '', 'type': '', 'range': '', 'prop': ''}}
     c['features'] = []
-    c['inventory'] = []
+    c['inventory'] = {'tot_weight': 0, 'items': []}
     c['monies'] = {'PP': 0, 'GP': 0, 'EP': 0, 'SP': 0, 'CP': 0}
     c['armor_prof'] = []
     c['wpn_prof'] = []

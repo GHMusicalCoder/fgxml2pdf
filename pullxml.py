@@ -3,14 +3,11 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ET
 from loaddata import load_name_data
-import xmlfuncs
 from collections import defaultdict
 
 
 def process_xml_file(file):
     character = design_blank_character()
-    players = []
-    load_name_data('charname.txt', players)
 
     xml = ET.parse(file)
     root = xml.getroot()
@@ -32,8 +29,46 @@ def process_xml_file(file):
                 character['info']['race'] = node.text
         elif node.tag == 'classes':
             get_class_information(node, character)
+        elif node.tag == 'abilities':
+            populate_abilities(node, character)
+        elif node.tag == 'coins':
+            populate_monies(node, character['monies'])
 
-    character['info']['p_name'] = get_player_name(file, character['info']['name'])
+    character['info']['p_name'] = get_player_name('charname.txt', character['info']['name'])
+    #test
+    print(character['info'])
+    print(character['abilities'])
+    print(character['monies'])
+    print(character['defense'])
+
+
+def populate_monies(coins, money):
+    for slot in coins:
+        for node in slot:
+            if node.tag == 'name':
+                coin = node.text
+            else:
+                amt = int(node.text)
+        if coin != '':
+            money[coin] = amt
+            coin = '';
+
+
+def populate_abilities(tree, char):
+    for ability in tree:
+        score = ability.tag[0:3]
+        mod = score + 'mod'
+        save = score + '_save'
+        for node in ability:
+            if node.tag == 'score':
+                char['abilities'][score] = int(node.text)
+            elif node.tag == 'bonus':
+                char['abilities'][mod] = int(node.text)
+            elif node.tag == 'save':
+                char['defense'][save]['mod'] = int(node.text)
+            elif node.tag == 'saveprof':
+                if node.text == '1':
+                    char['defense'][save]['prof'] = True
 
 
 def get_player_name(file, name):
@@ -90,73 +125,6 @@ def get_class_information(tree, char):
             char['info']['class'] = get_abbreviated_classes(classes)
         else:
             char['info']['class'] = classes[0]
-
-
-def pull_xml_old(file):
-    players = []
-    data = []
-    score_mods = [0, 0, 0, 0, 0, 0, 0]
-    features = []
-    lang_prof = ''
-    weapons = []
-    loaddata.load_name_data('charname.txt', players)
-    xml = ET.parse(file)
-    root = xml.getroot()
-    tree = root[0]
-    for children in tree:
-        # print(children.tag, children.attrib)
-        if children.tag == 'abilities':
-            proc_abilities(children, data, score_mods)
-        elif children.tag == 'appearance':
-            items = [i.strip() for i in children.text.split('*')]
-            for item in items:
-                it = [i.strip() for i in item.split(':')]
-                if it[0] == 'Hair':
-                    data.append(('Hair', it[1]))
-                elif it[0] == 'Eyes':
-                    data.append(('Eyes', it[1]))
-                elif it[0] == 'Skin':
-                    data.append(('Skin', it[1]))
-        elif children.tag == 'classes':
-            proc_classes(children, data)
-        elif children.tag == 'coins':
-            proc_coins(children, data)
-        elif children.tag == 'defenses':
-            data.append(('AC', get_listed_items(children[0], 'total')))
-        elif children.tag == 'featurelist':
-            proc_features(children, features)
-        elif children.tag == 'hp':
-            data.append(('HPMax', get_listed_items(children, 'total')))
-        elif children.tag == 'initiative':
-            data.append(('Initiative', '+' + get_listed_items(children, 'total')))
-        elif children.tag == 'inventorylist':
-            proc_inventory(children, data, weapons)
-        elif children.tag == 'languagelist':
-            lang_prof += proc_languages_proficiencies(children)
-        elif children.tag == 'name':
-            data.append(('CharacterName', children.text))
-            data.append(('CharacterName 2', children.text))
-            data.append(('PlayerName', proc_playername(players, children.text)))
-        elif children.tag == 'profbonus':
-            data.append(('ProfBonus', '+' + children.text))
-            score_mods[0] = int(children.text)
-        elif children.tag == 'proficiencylist':
-            lang_prof += proc_languages_proficiencies(children)
-        elif children.tag == 'senses':
-            features.append(children.text + '\n')
-        elif children.tag == 'skilllist':
-            proc_skills(children, data)
-        elif children.tag == 'traitlist':
-            proc_features(children, features)
-        elif children.tag == 'weaponlist':
-            proc_weapons(children, data, weapons, score_mods)
-        else:
-            xmlfuncs.process_normal_node(children.tag, children.text, data)
-
-    data.append(('Features and Traits', '\n'.join(features)))
-    data.append(('ProficienciesLang', lang_prof))
-    print(*weapons)
-    return list(data)
 
 
 def list_weapon(func_data, idx, name, atk, dmg):
@@ -451,7 +419,8 @@ def design_blank_character():
     c['info'] = {'name': '', 'p_name': '', 'race': '', 'class': '', 'background': '', 'subrace': '', 'alignment': '',
                  'weight': '', 'height': '', 'age': 0, 'level': 0, 'exp': 0, 'expneeded': 0, 'personalitytraits': '',
                  'ideals': '', 'bonds': '', 'flaws': ''}
-    c['abilities'] = {'str': 0, 'dex': 0, 'con': 0, 'int': 0, 'wis': 0, 'cha': 0, 'prof': 0}
+    c['abilities'] = {'str': 0, 'dex': 0, 'con': 0, 'int': 0, 'wis': 0, 'cha': 0, 'prof': 0, 'strmod': 0, 'dexmod': 0,
+                      'conmod': 0, 'intmod': 0, 'wismod': 0, 'charmod': 0}
     c['skills'] = {'acrobatics': {'mod': 0, 'prof': False}, 'animalhandling': {'mod': 0, 'prof': False},
                    'arcana': {'mod': 0, 'prof': False}, 'athletics': {'mod': 0, 'prof': False},
                    'deception': {'mod': 0, 'prof': False}, 'history': {'mod': 0, 'prof': False},
@@ -484,7 +453,7 @@ def design_blank_character():
                     'weapon6': {'name': '', 'hit': 0, 'dmg': '', 'type': '', 'range': '', 'prop': ''}}
     c['features'] = []
     c['inventory'] = []
-    c['monies'] = {'pp': 0, 'gp': 0, 'ep': 0, 'sp': 0, 'cp': 0}
+    c['monies'] = {'PP': 0, 'GP': 0, 'EP': 0, 'SP': 0, 'CP': 0}
     c['armor_prof'] = []
     c['wpn_prof'] = []
     c['tool_prof'] = []

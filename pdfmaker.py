@@ -11,10 +11,10 @@ def main():
     field_values = pullxml.process_xml_file(xml_filename)
     # pullxml.pull_xml(xml_filename)
     # print(*field_values)
-    fdf_filename = 'fgoutput.fdf'
-    makefdf.build_fdf(field_values, fdf_filename)
-    pdftk = "pdftk sample.pdf fill_form fgoutput.fdf output romulus.pdf flatten"
-    os.system(pdftk)
+    #fdf_filename = 'fgoutput.fdf'
+    #makefdf.build_fdf(field_values, fdf_filename)
+    #pdftk = "pdftk sample.pdf fill_form fgoutput.fdf output romulus.pdf flatten"
+    #os.system(pdftk)
 
 
 def get_xml_filename():

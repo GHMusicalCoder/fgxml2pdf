@@ -39,6 +39,16 @@ def process_xml_file(file):
             populate_limits(node, character)
         elif node.tag == 'featlist':
             populate_feats(node, character)
+        elif node.tag == 'featurelist':
+            populate_features(node, character['features'])
+        elif node.tag == 'hp':
+            character['health']['max_hp'] = int(get_listed_items(node, 'total'))
+        elif node.tag == 'initiative':
+            character['combat']['init'] = int(get_listed_items(node, 'total')) + character['combat']['init_mod']
+        elif node.tag == 'inventorylist':
+            populate_inventory(node, character['inventory']['items'])
+        elif node.tag == 'languagelist':
+            populate_languages(node, character['languages'])
 
     character['info']['p_name'] = get_player_name('charname.txt', character['info']['name'])
     #test
@@ -62,6 +72,29 @@ def process_xml_file(file):
     print(character['spells'])
 
 
+def populate_languages(tree, langs):
+    for node in tree:               #id
+        for item in node:           #name
+            langs.append(item.text)
+
+def populate_inventory(tree, inv):
+    for node in tree:       #id
+        qty = int(get_listed_items(node, 'count'))
+        item = get_listed_items(node, 'name')
+        if item is not None:
+            if qty > 1:
+                inv.append(str(qty) + ' ' + item)
+            else:
+                inv.append(item)
+
+
+def populate_features(tree, feat):
+    for node in tree:
+        for item in node:
+            if item.tag == 'name':
+                feat.append(item.text)
+
+
 def populate_feats(tree, char):
     for node in tree:
         name = ''
@@ -71,14 +104,14 @@ def populate_feats(tree, char):
                 name = feat.text
                 if name == 'Alert':
                     char['combat']['init_mod'] += 5
-            elif feat.tag == 'text':
-                for text in feat:
-                    if text.tag == 'p':
-                        desc = text.text
-                    elif text.tag == 'list':
-                        for list in text:
-                            desc += '\n  ' + list.text
-        char['features'].append(name + ' : ' + desc)
+            # elif feat.tag == 'text':
+            #     for text in feat:
+            #         if text.tag == 'p':
+            #             desc = text.text
+            #         elif text.tag == 'list':
+            #             for list in text:
+            #                 desc += '\n  ' + list.text
+        char['features'].append(name)
 
 
 def populate_limits(tree, char):
@@ -188,199 +221,10 @@ def get_class_information(tree, char):
             char['info']['class'] = classes[0]
 
 
-def list_weapon(func_data, idx, name, atk, dmg):
-    weapons = ['Wpn Name', 'Wpn Name 2', 'Wpn Name 3']
-    atk_bonus = ['Wpn1 AtkBonus', 'Wpn2 AtkBonus', 'Wpn3 AtkBonus']
-    dmg_bonus = ['Wpn1 Damage', 'Wpn2 Damage', 'Wpn3 Damage']
-    func_data.append((weapons[idx], name))
-    func_data.append((atk_bonus[idx], atk))
-    func_data.append((dmg_bonus[idx], dmg))
-
-
-def wpn_str_dex(data, adjs):
-    if 'range' in data or 'Finesse' in data:
-        return adjs[2]
-    else:
-        return adjs[1]
-
-
-def proc_weapons(children, func_data, wpns, adjustments):
-    c = 0
-    wname, wattack, wdamage = '', '', ''
-
-    for child in children:
-        for kid in child:
-            if kid.tag == 'attackbonus':
-                atk_mod = int(kid.text)
-            elif kid.tag == 'damagelist':
-                for entry in kid:
-                    dmg_mod = int(get_listed_items(entry, 'bonus'))
-                    dmg_type = get_listed_items(entry, 'type')
-            elif kid.tag == 'name':
-                wname = kid.text
-        for w in wpns:
-            if w[0] == wname:
-                wpn_data = w[2]
-                dmg_die = w[1]
-
-        atk_mod += adjustments[0] + wpn_str_dex(wpn_data, adjustments)
-        dmg_mod += wpn_str_dex(wpn_data, adjustments)
-
-        if dmg_mod > 0:
-            temp = dmg_die.split(' ')
-
-            # if dmg[0] == 'd':
-            #     damage = '1' + dmg
-            # else:
-            #     damage = dmg
-            # if dmod != '0':
-            #     damage += '+' + dmod
-            # damage += ' ' + dtype
-            # if c == 1:
-            #     func_data.append(('Wpn Name', wpn))
-            #     func_data.append(('Wpn1 AtkBonus', '+' + str(atk)))
-            #     func_data.append(('Wpn1 Damage', damage))
-
-
-def proc_skills(children, func_data):
-    for child in children:
-        name = get_listed_items(child, 'name')
-        prof = get_listed_items(child, 'prof')
-        adj = get_listed_items(child, 'total')
-        set_skill(func_data, name, prof, adj)
-
-
-def set_skill(fdata, skill, isprof, mod):
-    if skill == 'Acrobatics':
-        fdata.append(('Acrobatics', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 23', 'Yes'))
-    if skill == 'Animal Handling':
-        fdata.append(('Animal', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 24', 'Yes'))
-    if skill == 'Arcana':
-        fdata.append(('Arcana', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 25', 'Yes'))
-    if skill == 'Athletics':
-        fdata.append(('Athletics', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 26', 'Yes'))
-    if skill == 'Deception':
-        fdata.append(('Deception ', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 27', 'Yes'))
-    if skill == 'History':
-        fdata.append(('History ', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 28', 'Yes'))
-    if skill == 'Insight':
-        fdata.append(('Insight', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 29', 'Yes'))
-    if skill == 'Intimidation':
-        fdata.append(('Intimidation', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 30', 'Yes'))
-    if skill == 'Investigation':
-        fdata.append(('Investigation ', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 31', 'Yes'))
-    if skill == 'Medicine':
-        fdata.append(('Medicine', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 32', 'Yes'))
-    if skill == 'Nature':
-        fdata.append(('Nature', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 33', 'Yes'))
-    if skill == 'Perception':
-        fdata.append(('Perception ', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 34', 'Yes'))
-    if skill == 'Performance':
-        fdata.append(('Performance', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 35', 'Yes'))
-    if skill == 'Persuasion':
-        fdata.append(('Persuasion', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 36', 'Yes'))
-    if skill == 'Religion':
-        fdata.append(('Religion', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 37', 'Yes'))
-    if skill == 'Sleight of Hand':
-        fdata.append(('SleightofHand', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 38', 'Yes'))
-    if skill == 'Stealth':
-        fdata.append(('Stealth ', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 39', 'Yes'))
-    if skill == 'Survival':
-        fdata.append(('Survival', '+' + mod))
-        if isprof == '1':
-            fdata.append(('Check Box 25', 'Yes'))
-
-
-def proc_languages_proficiencies(children):
-    line = ''
-    for child in children:
-        line += get_listed_items(child, 'name') + '\n'
-    return line + '\n'
-
-
-def proc_inventory(children, func_data, weapons):
-    inv = []
-    for child in children:
-        qty = ''
-        wpn = False
-        for kid in child:
-            if kid.tag == 'count':
-                if int(kid.text) > 1:
-                    qty = kid.text
-            elif kid.tag == 'damage':
-                dmg = kid.text
-            elif kid.tag == 'name':
-                item = kid.text
-            elif kid.tag == 'properties':
-                prop = kid.text
-            elif kid.tag == 'type' and kid.text == 'Weapon':
-                wpn = True
-        if qty != '':
-            inv.append(qty + ' ' + item)
-        else:
-            inv.append(item)
-        if wpn:
-            weapons.append([item, dmg, prop])
-
-    # inv is our list of inventory
-    inv.sort()
-    l = []
-    line = inv[0] if len(inv) > 0 else ""
-    for i in range(1, len(inv)):
-        if (len(line) + len(inv[i]) + 3) < 26:
-            line += ' / ' + inv[i]
-        else:
-            l.append(line)
-            line = inv[i]
-    func_data.append(('Equipment', '\n'.join(l)))
-
-
-def get_listed_items(children, name):
-    for child in children:
-        if child.tag == name:
-            return child.text
-
-
-def proc_features(children, feat):
-    for child in children:
-        for kid in child:
-            if kid.tag == 'name':
-                feat.append(kid.text)
-    feat[-1] = feat[-1] + '\n'
+def get_listed_items(tree, item):
+    for node in tree:
+        if node.tag == item:
+            return node.text
 
 
 def design_blank_character():

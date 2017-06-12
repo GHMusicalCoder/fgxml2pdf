@@ -49,6 +49,18 @@ def process_xml_file(file):
             populate_inventory(node, character['inventory']['items'])
         elif node.tag == 'languagelist':
             populate_languages(node, character['languages'])
+        elif node.tag == 'powergroup':
+            populate_spellpower(node, character['spells'])
+        elif node.tag == 'powermeta':
+            populate_spellslots(node, character['spells'])
+        elif node.tag == 'powers':
+            populate_spells(node, character['spells'])
+        elif node.tag == 'profbonus':
+            character['abilities']['prof'] = int(node.text)
+        elif node.tag == 'proficiencylist':
+            populate_proficiencies(node, character)
+        elif node.tag == 'senses':
+            character['features'].append(node.text)
 
     character['info']['p_name'] = get_player_name('charname.txt', character['info']['name'])
     #test
@@ -66,16 +78,60 @@ def process_xml_file(file):
     print(character['inventory'])
     print(character['monies'])
     print(character['armor_prof'])
-    print(character['wpn_prof'])
+    print(character['weapon_prof'])
     print(character['tool_prof'])
     print(character['languages'])
     print(character['spells'])
+
+
+def populate_proficiencies(tree, char):
+    for node in tree:               # id
+        profs = node[0].text.split(':')
+        char[profs[0].lower() + '_prof'] = [p.strip().title() for p in profs[1].split(',')]
+
+
+def populate_spells(tree, spells):
+    for node in tree:               # id
+        name = get_listed_items(node, 'name')
+        level = 'level' + get_listed_items(node, 'level')
+        spells[level].append(name)
+
+
+def populate_spellslots(tree, spells):
+    for node in tree:
+        if node.tag[-6:] == 'slots1':
+            spells['l1'] += int(node[0].text)
+        if node.tag[-6:] == 'slots2':
+            spells['l2'] += int(node[0].text)
+        if node.tag[-6:] == 'slots3':
+            spells['l3'] += int(node[0].text)
+        if node.tag[-6:] == 'slots4':
+            spells['l4'] += int(node[0].text)
+        if node.tag[-6:] == 'slots5':
+            spells['l5'] += int(node[0].text)
+        if node.tag[-6:] == 'slots6':
+            spells['l6'] += int(node[0].text)
+        if node.tag[-6:] == 'slots7':
+            spells['l7'] += int(node[0].text)
+        if node.tag[-6:] == 'slots8':
+            spells['l8'] += int(node[0].text)
+        if node.tag[-6:] == 'slots9':
+            spells['l9'] += int(node[0].text)
+
+
+def populate_spellpower(tree, spells):
+    for node in tree:               #id
+        power = get_listed_items(node, 'name')
+        if power == 'Spells':
+            spells['prep'] = int(get_listed_items(node, 'prepared'))
+            spells['stat'] = get_listed_items(node, 'stat')[0:3]
 
 
 def populate_languages(tree, langs):
     for node in tree:               #id
         for item in node:           #name
             langs.append(item.text)
+
 
 def populate_inventory(tree, inv):
     for node in tree:       #id
@@ -234,7 +290,7 @@ def design_blank_character():
                  'weight': '', 'height': '', 'age': 0, 'level': 0, 'exp': 0, 'expneeded': 0, 'personalitytraits': '',
                  'ideals': '', 'bonds': '', 'flaws': ''}
     c['abilities'] = {'str': 0, 'dex': 0, 'con': 0, 'int': 0, 'wis': 0, 'cha': 0, 'prof': 0, 'strmod': 0, 'dexmod': 0,
-                      'conmod': 0, 'intmod': 0, 'wismod': 0, 'charmod': 0}
+                      'conmod': 0, 'intmod': 0, 'wismod': 0, 'chamod': 0}
     c['skills'] = {'acrobatics': {'mod': 0, 'prof': False}, 'animalhandling': {'mod': 0, 'prof': False},
                    'arcana': {'mod': 0, 'prof': False}, 'athletics': {'mod': 0, 'prof': False},
                    'deception': {'mod': 0, 'prof': False}, 'history': {'mod': 0, 'prof': False},
@@ -269,12 +325,12 @@ def design_blank_character():
     c['inventory'] = {'tot_weight': 0, 'items': []}
     c['monies'] = {'PP': 0, 'GP': 0, 'EP': 0, 'SP': 0, 'CP': 0}
     c['armor_prof'] = []
-    c['wpn_prof'] = []
+    c['weapon_prof'] = []
     c['tool_prof'] = []
     c['languages'] = []
     c['spells'] = {'cantrips': [], 'level1': [], 'level2': [], 'level3': [], 'level4': [], 'level5': [], 'level6': [],
                    'level7': [], 'level8': [], 'level9': [], 'atk': 0, 'dc': 0, 'l0': 0, 'l1': 0, 'l2': 0, 'l3': 0,
-                   'l4': 0, 'l5': 0, 'l6': 0, 'l7': 0, 'l8': 0, 'l9': 0}
+                   'l4': 0, 'l5': 0, 'l6': 0, 'l7': 0, 'l8': 0, 'l9': 0, 'stat': '', 'prep': 0}
     return c
 
 

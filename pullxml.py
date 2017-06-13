@@ -46,7 +46,7 @@ def process_xml_file(file):
         elif node.tag == 'initiative':
             character['combat']['init'] = int(get_listed_items(node, 'total')) + character['combat']['init_mod']
         elif node.tag == 'inventorylist':
-            populate_inventory(node, character['inventory']['items'])
+            populate_inventory(node, character)
         elif node.tag == 'languagelist':
             populate_languages(node, character['languages'])
         elif node.tag == 'powergroup':
@@ -61,8 +61,15 @@ def process_xml_file(file):
             populate_proficiencies(node, character)
         elif node.tag == 'senses':
             character['features'].append(node.text)
+        elif node.tag == 'skilllist':
+            populate_skills(node, character['skills'])
+        elif node.tag == 'speed':
+            populate_speed(node, character)
+        elif node.tag == 'traitlist':
+            populate_traits(node, character['features'])
 
     character['info']['p_name'] = get_player_name('charname.txt', character['info']['name'])
+    populate_weapon_modifiers(character)
     #test
     print(character['info'])
     print(character['abilities'])
@@ -82,6 +89,75 @@ def process_xml_file(file):
     print(character['tool_prof'])
     print(character['languages'])
     print(character['spells'])
+
+
+def populate_weapon_modifiers(char):
+    for _ in range(1, 7):
+        ref = 'weapon' + str(_)
+        if char['weapons'][ref]['name'] != '':
+            if char['weapons'][ref]['range'] != '' or 'Finesse' in char['weapons'][ref]['prop']:
+                modifier = char['abilities']['dexmod']
+            else:
+                modifier = char['abilities']['strmod']
+            if modifier > 0:
+                char['weapons'][ref]['dmg'] += '+' + str(modifier)
+            char['weapons'][ref]['hit'] += modifier + char['abilities']['prof']
+
+
+def populate_weapons(node, char):
+    if char['weapons']['weapon1']['name'] == '':
+        wpn = char['weapons']['weapon1']
+    elif char['weapons']['weapon2']['name'] == '':
+        wpn = char['weapons']['weapon2']
+    elif char['weapons']['weapon3']['name'] == '':
+        wpn = char['weapons']['weapon3']
+    elif char['weapons']['weapon4']['name'] == '':
+        wpn = char['weapons']['weapon4']
+    elif char['weapons']['weapon5']['name'] == '':
+        wpn = char['weapons']['weapon5']
+    elif char['weapons']['weapon6']['name'] == '':
+        wpn = char['weapons']['weapon6']
+    if wpn is not None:
+        for item in node:
+            if item.tag == 'name':
+                wpn['name'] = item.text
+            elif item.tag == 'properties':
+                if 'range' in item.text:
+                    x = item.text.index('range')
+                    wpn['range'] = item.text[x+5:].strip().strip(')')
+                    wpn['prop'] = item.text[:x].strip().strip('(')
+                elif 'Finesse' in item.text:
+                    wpn['prop'] = item.text
+            elif item.tag == 'bonus':
+                wpn['hit'] += int(item.text)
+            elif item.tag == 'damage':
+                temp = item.text.split(' ')
+                wpn['dmg'] = temp[0]
+                wpn['type'] = temp[1][0].upper()
+
+
+def populate_traits(tree, feat):
+    for node in tree:             # id
+        feat.append(get_listed_items(node, 'name'))
+
+
+def populate_speed(tree, char):
+    for node in tree:               # id
+        if node.tag == 'base':
+            char['combat']['speed'] = int(node.text)
+
+
+def populate_skills(tree, skill):
+    for node in tree:               # id
+        for item in node:           # skill
+            if item.tag == 'name':
+                name = item.text.replace(' ', '').lower()
+            elif item.tag == 'prof':
+                prof = item.text
+            elif item.tag == 'total':
+                mod = int(item.text)
+        skill[name]['mod'] = mod
+        skill[name]['prof'] = True if prof == '1' else False
 
 
 def populate_proficiencies(tree, char):
@@ -133,15 +209,18 @@ def populate_languages(tree, langs):
             langs.append(item.text)
 
 
-def populate_inventory(tree, inv):
+def populate_inventory(tree, char):
     for node in tree:       #id
         qty = int(get_listed_items(node, 'count'))
         item = get_listed_items(node, 'name')
+        type = get_listed_items(node, 'type')
         if item is not None:
             if qty > 1:
-                inv.append(str(qty) + ' ' + item)
+                char['inventory']['items'].append(str(qty) + ' ' + item)
             else:
-                inv.append(item)
+                char['inventory']['items'].append(item)
+        if type == 'Weapon':
+            populate_weapons(node, char)
 
 
 def populate_features(tree, feat):

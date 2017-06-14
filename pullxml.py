@@ -70,25 +70,14 @@ def process_xml_file(file):
 
     character['info']['p_name'] = get_player_name('charname.txt', character['info']['name'])
     populate_weapon_modifiers(character)
-    #test
-    print(character['info'])
-    print(character['abilities'])
-    print(character['monies'])
-    print(character['defense'])
-    print(character['skills'])
-    print(character['limits'])
-    print(character['health'])
-    print(character['combat'])
-    print(character['class_features'])
-    print(character['weapons'])
-    print(character['features'])
-    print(character['inventory'])
-    print(character['monies'])
-    print(character['armor_prof'])
-    print(character['weapon_prof'])
-    print(character['tool_prof'])
-    print(character['languages'])
-    print(character['spells'])
+    return character
+
+
+def populate_armor(tree, char):
+    if get_listed_items(tree, 'subtype') == 'Shield':
+        char['defense']['shield'] = get_listed_items(tree, 'name')
+    else:
+        char['defense']['armor'] = get_listed_items(tree, 'name')
 
 
 def populate_weapon_modifiers(char):
@@ -221,6 +210,8 @@ def populate_inventory(tree, char):
                 char['inventory']['items'].append(item)
         if type == 'Weapon':
             populate_weapons(node, char)
+        elif type == 'Armor':
+            populate_armor(node, char)
 
 
 def populate_features(tree, feat):
@@ -383,10 +374,11 @@ def design_blank_character():
                    'long_jump': 0, 'crawl_swim': 0, 'daily_travel': 0}
     c['health'] = {'max_hp': 0, 'd6': 0, 'd8': 0, 'd10': 0, 'd12': 0, 'condition1': '', 'condition2': '',
                    'condition3': ''}
-    c['defense'] = {'ac': 0, 'use_shield': False, 'stealth_dis': False, 'str_save': {'mod': 0, 'prof': False},
-                    'dex_save': {'mod': 0, 'prof': False}, 'con_save': {'mod': 0, 'prof': False},
-                    'int_save': {'mod': 0, 'prof': False}, 'wis_save': {'mod': 0, 'prof': False},
-                    'cha_save': {'mod': 0, 'prof': False}, 'resistance1': '', 'resistance2': '', 'resistance3': ''}
+    c['defense'] = {'ac': 0, 'use_shield': False, 'stealth_dis': False, 'armor': '', 'shield': '',
+                    'str_save': {'mod': 0, 'prof': False}, 'dex_save': {'mod': 0, 'prof': False},
+                    'con_save': {'mod': 0, 'prof': False}, 'int_save': {'mod': 0, 'prof': False},
+                    'wis_save': {'mod': 0, 'prof': False}, 'cha_save': {'mod': 0, 'prof': False},
+                    'resistance1': '', 'resistance2': '', 'resistance3': ''}
     c['combat'] = {'init': 0, 'speed': 0, 'num_atks': 0, 'init_mod': 0}
     c['class_features'] = {'feature1': {'name': '', 'uses': 0, 'rest': ''},
                            'feature2': {'name': '', 'uses': 0, 'rest': ''},

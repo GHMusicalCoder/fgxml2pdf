@@ -27,6 +27,10 @@ def build_type2_fields(char):
     data.append(('LEVEL', char['info']['level']))
     data.append(('CURRENT EXP', char['info']['exp']))
     data.append(('EXP FOR NEXT LEVEL', char['info']['expneeded']))
+    data.append(('Personality Traits', char['info']['personalitytraits']))
+    data.append(('Ideals', char['info']['ideals']))
+    data.append(('Bonds', char['info']['bonds']))
+    data.append(('Flaws', char['info']['flaws']))
 
     # section 2 - ability scores
     data.append(('STR MOD', '+' + str(char['abilities']['strmod'])))
@@ -141,6 +145,111 @@ def build_type2_fields(char):
         elif char['class_features']['feature6']['rest'] == 'short':
             data.append(('54', 'Yes'))
 
+    # section 7 - skills
+    data.append(('Acrobatics', '+' + str(char['skills']['acrobatics']['mod'])))
+    if char['skills']['acrobatics']['prof']:
+        data.append(('11', 'Yes'))
+    data.append(('Animal Handling', '+' + str(char['skills']['animalhandling']['mod'])))
+    if char['skills']['animalhandling']['prof']:
+        data.append(('13', 'Yes'))
+    data.append(('Arcana', '+' + str(char['skills']['arcana']['mod'])))
+    if char['skills']['arcana']['prof']:
+        data.append(('15', 'Yes'))
+    data.append(('Athletics', '+' + str(char['skills']['athletics']['mod'])))
+    if char['skills']['athletics']['prof']:
+        data.append(('17', 'Yes'))
+    data.append(('Deception', '+' + str(char['skills']['deception']['mod'])))
+    if char['skills']['deception']['prof']:
+        data.append(('19', 'Yes'))
+    data.append(('History', '+' + str(char['skills']['history']['mod'])))
+    if char['skills']['history']['prof']:
+        data.append(('21', 'Yes'))
+    data.append(('Insight', '+' + str(char['skills']['insight']['mod'])))
+    if char['skills']['insight']['prof']:
+        data.append(('23', 'Yes'))
+    data.append(('Intimidation', '+' + str(char['skills']['intimidation']['mod'])))
+    if char['skills']['intimidation']['prof']:
+        data.append(('25', 'Yes'))
+    data.append(('Investigation', '+' + str(char['skills']['investigation']['mod'])))
+    if char['skills']['investigation']['prof']:
+        data.append(('27', 'Yes'))
+    data.append(('Medicine', '+' + str(char['skills']['medicine']['mod'])))
+    if char['skills']['medicine']['prof']:
+        data.append(('29', 'Yes'))
+    data.append(('Nature', '+' + str(char['skills']['nature']['mod'])))
+    if char['skills']['nature']['prof']:
+        data.append(('31', 'Yes'))
+    data.append(('Perception', '+' + str(char['skills']['perception']['mod'])))
+    if char['skills']['perception']['prof']:
+        data.append(('33', 'Yes'))
+    data.append(('Performance', '+' + str(char['skills']['performance']['mod'])))
+    if char['skills']['performance']['prof']:
+        data.append(('35', 'Yes'))
+    data.append(('Persuasion', '+' + str(char['skills']['persuasion']['mod'])))
+    if char['skills']['persuasion']['prof']:
+        data.append(('81', 'Yes'))
+    data.append(('Religion', '+' + str(char['skills']['religion']['mod'])))
+    if char['skills']['religion']['prof']:
+        data.append(('85', 'Yes'))
+    data.append(('Sleight of Hand', '+' + str(char['skills']['sleightofhand']['mod'])))
+    if char['skills']['sleightofhand']['prof']:
+        data.append(('40', 'Yes'))      # this is a bug and probably needs to be fixed - its also the Wis Save Prof flag
+    data.append(('Stealth', '+' + str(char['skills']['stealth']['mod'])))
+    if char['skills']['stealth']['prof']:
+        data.append(('84', 'Yes'))
+    data.append(('Survival', '+' + str(char['skills']['survival']['mod'])))
+    if char['skills']['survival']['prof']:
+        data.append(('89', 'Yes'))
+
+    # section 8 - weapons
+    if char['weapons']['weapon1']['name'] != '':
+        data.append(('Weapon 1', char['weapons']['weapon1']['name']))
+        data.append(('To Hit 1', '+' + str(char['weapons']['weapon1']['hit'])))
+        data.append(('Damage 1', char['weapons']['weapon1']['dmg']))
+        data.append(('Type 1', char['weapons']['weapon1']['type']))
+        data.append(('Range 1', char['weapons']['weapon1']['range']))
+        data.append(('Properties 1', char['weapons']['weapon1']['prop']))
+    if char['weapons']['weapon2']['name'] != '':
+        data.append(('Weapon 2', char['weapons']['weapon2']['name']))
+        data.append(('To Hit 2', '+' + str(char['weapons']['weapon2']['hit'])))
+        data.append(('Damage 2', char['weapons']['weapon2']['dmg']))
+        data.append(('Type 2', char['weapons']['weapon2']['type']))
+        data.append(('Range 2', char['weapons']['weapon2']['range']))
+        data.append(('Properties 2', char['weapons']['weapon2']['prop']))
+    if char['weapons']['weapon3']['name'] != '':
+        data.append(('Weapon 3', char['weapons']['weapon3']['name']))
+        data.append(('To Hit 3', '+' + str(char['weapons']['weapon3']['hit'])))
+        data.append(('Damage 3', char['weapons']['weapon3']['dmg']))
+        data.append(('Type 3', char['weapons']['weapon3']['type']))
+        data.append(('Range 3', char['weapons']['weapon3']['range']))
+        data.append(('Properties 3', char['weapons']['weapon3']['prop']))
+    if char['weapons']['weapon4']['name'] != '':
+        data.append(('Weapon 4', char['weapons']['weapon4']['name']))
+        data.append(('To Hit 4', '+' + str(char['weapons']['weapon4']['hit'])))
+        data.append(('Damage 4', char['weapons']['weapon4']['dmg']))
+        data.append(('Type 4', char['weapons']['weapon4']['type']))
+        data.append(('Range 4', char['weapons']['weapon4']['range']))
+        data.append(('Properties 4', char['weapons']['weapon4']['prop']))
+    if char['weapons']['weapon5']['name'] != '':
+        data.append(('Weapon 5', char['weapons']['weapon5']['name']))
+        data.append(('To Hit 5', '+' + str(char['weapons']['weapon5']['hit'])))
+        data.append(('Damage 5', char['weapons']['weapon5']['dmg']))
+        data.append(('Type 5', char['weapons']['weapon5']['type']))
+        data.append(('Range 5', char['weapons']['weapon5']['range']))
+        data.append(('Properties 5', char['weapons']['weapon5']['prop']))
+
+    # section 9 - physical limits
+    data.append(('Physical 1', str(1 + char['abilities']['conmod'] if char['abilities']['conmod'] >= 0 else .5)))
+    data.append(('Physical 2', str(char['abilities']['conmod'] if char['abilities']['conmod'] > 1 else 1)))
+    data.append(('Physical 3', str(3 + char['abilities']['conmod'] if char['abilities']['conmod'] >= -2 else 1)))
+    data.append(('Physical 4', str(char['limits']['carry_max'])))
+    data.append(('Physical 5', str(char['limits']['lift_max'])))
+    data.append(('Physical 6', str((3 + char['abilities']['strmod']) // 2) + ' / ' + str(3+char['abilities']['strmod'])))
+    data.append(('Physical 7', str(char['abilities']['str'] // 2) + ' / ' + str(char['abilities']['str'])))
+    data.append(('Physical 8', str(char['combat']['speed'] // 2)))
+    data.append(('physical 9', '18/24/30'))
+
+    # page 2
     return list(data)
 
 

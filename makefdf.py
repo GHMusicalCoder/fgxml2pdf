@@ -250,6 +250,139 @@ def build_type2_fields(char):
     data.append(('physical 9', '18/24/30'))
 
     # page 2
+    # section 10 - feats & traits
+    left, right = '', ''
+    x = 0
+    for feat in char['features']:
+        if x % 2 == 0:
+            left += feat + '\n\n'
+        else:
+            right += feat + '\n\n'
+        x += 1
+    data.append(('Feats 1', left))
+    data.append(('Feats 2', right))
+
+    # section 11 - inventory
+    left, center, right = '', '', ''
+    x = 0
+    for inv in char['inventory']['items']:
+        if x % 3 == 0:
+            left += inv + '\n'
+        elif x % 3 == 1:
+            center += inv + '\n'
+        else:
+            right += inv + '\n'
+        x += 1
+
+    data.append(('Inventory 1', left))
+    data.append(('Inventory 2', center))
+    data.append(('Inventory 3', right))
+
+    # section 12 - armor profs
+    data.append(('Armour Proficiency', '\n'.join(char['armor_prof'])))
+
+    # section 13 - weapon prof
+    data.append(('Weapon  Proficiency', '\n'.join(char['weapon_prof'])))
+
+    # section 14 - tool prof
+    data.append(('Tool Proficiency', '\n'.join(char['tool_prof'])))
+
+    # section 15 - languages
+    data.append(('Language Proficiency', '\n'.join(char['languages'])))
+
+    # section 16 - coins
+    data.append(('PP', str(char['monies']['PP'])))
+    data.append(('GP', str(char['monies']['GP'])))
+    data.append(('EP', str(char['monies']['EP'])))
+    data.append(('SP', str(char['monies']['SP'])))
+    data.append(('CP', str(char['monies']['CP'])))
+
+    # page 3
+    # section 17 - spellcasting
+    data.append(('Spells Knows', str(char['spells']['prep'])))
+    data.append(('SpellBonus', '+' + str(char['spells']['atk'])))
+    data.append(('Spell Save DC', str(char['spells']['dc'])))
+    data.append(('l0', str(char['spells']['l0'])))
+    data.append(('l1', str(char['spells']['l1'])))
+    data.append(('l2', str(char['spells']['l2'])))
+    data.append(('l3', str(char['spells']['l3'])))
+    data.append(('l4', str(char['spells']['l4'])))
+    data.append(('l5', str(char['spells']['l5'])))
+    data.append(('l6', str(char['spells']['l6'])))
+    data.append(('l7', str(char['spells']['l7'])))
+    data.append(('l8', str(char['spells']['l8'])))
+    data.append(('l9', str(char['spells']['l9'])))
+
+    # cantrips
+    if len(char['spells']['cantrips']) > 0:
+        placard = 1
+        for spell in char['spells']['cantrips']:
+            data.append((str(placard), spell))
+            placard += 1
+
+    # level 1
+    if len(char['spells']['level1']) > 0:
+        placard = 1
+        for spell in char['spells']['level1']:
+            data.append((str(placard)+'_2', spell))
+            placard += 1
+
+    # level 2
+    if len(char['spells']['level2']) > 0:
+        placard = 1
+        for spell in char['spells']['level2']:
+            data.append((str(placard)+'_3', spell))
+            placard += 1
+
+    # level 3
+    if len(char['spells']['level3']) > 0:
+        placard = 1
+        for spell in char['spells']['level3']:
+            data.append((str(placard)+'_4', spell))
+            placard += 1
+
+    # level 4
+    if len(char['spells']['level4']) > 0:
+        placard = 1
+        for spell in char['spells']['level4']:
+            data.append((str(placard)+'_5', spell))
+            placard += 1
+
+    # level 5
+    if len(char['spells']['level5']) > 0:
+        placard = 1
+        for spell in char['spells']['level5']:
+            data.append((str(placard)+'_6', spell))
+            placard += 1
+
+    # level 6
+    if len(char['spells']['level6']) > 0:
+        placard = 1
+        for spell in char['spells']['level6']:
+            data.append((str(placard)+'_7', spell))
+            placard += 1
+
+    # level 7
+    if len(char['spells']['level7']) > 0:
+        placard = 1
+        for spell in char['spells']['level7']:
+            data.append((str(placard)+'_8', spell))
+            placard += 1
+
+    # level 8
+    if len(char['spells']['level8']) > 0:
+        placard = 1
+        for spell in char['spells']['level8']:
+            data.append((str(placard)+'_9', spell))
+            placard += 1
+
+    # level 9
+    if len(char['spells']['level9']) > 0:
+        placard = 1
+        for spell in char['spells']['level9']:
+            data.append((str(placard)+'_10', spell))
+            placard += 1
+
     return list(data)
 
 

@@ -70,8 +70,16 @@ def process_xml_file(file):
 
     character['info']['p_name'] = get_player_name('charname.txt', character['info']['name'])
     populate_weapon_modifiers(character)
+    populate_spell_info(character)
     return character
 
+
+def populate_spell_info(char):
+    stat = char['spells']['stat']
+    mod = char['abilities'][stat+'mod']
+    mod += char['abilities']['prof']
+    char['spells']['atk'] = mod
+    char['spells']['dc'] = 8 + mod
 
 def populate_armor(tree, char):
     if get_listed_items(tree, 'subtype') == 'Shield':

@@ -9,12 +9,15 @@ def main():
     # xml_filename = get_xml_filename() + ".xml"
     xml_filename = 'romulus.xml'
     data = pullxml.process_xml_file(xml_filename)
-    # pullxml.pull_xml(xml_filename)
-    # print(*field_values)
     field_values = makefdf.build_type2_fields(data)
     fdf_filename = 'fgoutput.fdf'
     makefdf.build_fdf(field_values, fdf_filename)
-    pdftk = "pdftk sample_type2.pdf fill_form fgoutput.fdf output romulus.pdf flatten"
+    pdftk = "pdftk sample_type2.pdf fill_form fgoutput.fdf output romulus_type2.pdf flatten"
+    os.system(pdftk)
+    field_values = makefdf.build_type1_fields(data)
+    fdf_filename = 'fgoutput.fdf'
+    makefdf.build_fdf(field_values, fdf_filename)
+    pdftk = "pdftk sample.pdf fill_form fgoutput.fdf output romulus_type1.pdf flatten"
     os.system(pdftk)
 
 

@@ -18,7 +18,7 @@ def process_xml_file(file):
             character['info'][node.tag] = int(node.text)
         elif node.tag == 'alignment' or node.tag == 'background' or node.tag == 'bonds' or node.tag == 'flaws' or \
         node.tag == 'height' or node.tag == 'ideals' or node.tag == 'weight' or node.tag == 'personalitytraits' or \
-        node.tag == 'name':
+        node.tag == 'name' or node.tag == 'deity':
             character['info'][node.tag] = node.text
         elif node.tag == 'race':
             if '(' in node.text:
@@ -80,6 +80,7 @@ def populate_spell_info(char):
     mod += char['abilities']['prof']
     char['spells']['atk'] = mod
     char['spells']['dc'] = 8 + mod
+
 
 def populate_armor(tree, char):
     if get_listed_items(tree, 'subtype') == 'Shield':
@@ -155,6 +156,8 @@ def populate_skills(tree, skill):
                 mod = int(item.text)
         skill[name]['mod'] = mod
         skill[name]['prof'] = True if prof == '1' else False
+        if name == 'investigation' or name == 'perception':
+            skill[name]['pass'] = 10 + mod
 
 
 def populate_proficiencies(tree, char):
@@ -309,29 +312,39 @@ def get_player_name(file, name):
 
 def get_abbreviated_classes(classlist):
     class_ = []
+    spell_class = []
     for c in classlist:
         if c == 'Barbarian':
             class_.append('Barb')
         elif c == 'Cleric':
             class_.append('Clrc')
+            spell_class.append('Clrc')
         elif c == 'Druid':
             class_.append('Drd')
+            spell_class.append('Drd')
         elif c == 'Fighter':
             class_.append('Ftr')
         elif c == 'Paladin':
             class_.append('Pal')
+            spell_class.append('Pal')
         elif c == 'Ranger':
             class_.append('Rng')
+            spell_class.append('Rng')
         elif c == 'Rogue':
             class_.append('Rog')
         elif c == 'Sorcerer':
             class_.append('Sorc')
+            spell_class.append('Sorc')
         elif c == 'Warlock':
             class_.append('Wrlk')
+            spell_class.append('Wrlk')
         elif c == 'Wizard':
             class_.append('Wiz')
+            spell_class.append('Wiz')
         else:
             class_.append(c)
+            if c == 'Bard':
+                spell_class.append('Bard')
     return '/'.join(class_)
 
 
@@ -353,6 +366,7 @@ def get_class_information(tree, char):
             char['info']['class'] = get_abbreviated_classes(classes)
         else:
             char['info']['class'] = classes[0]
+            char['spells']['class'] = classes[0]
 
 
 def get_listed_items(tree, item):
@@ -366,15 +380,16 @@ def design_blank_character():
     # build character info section
     c['info'] = {'name': '', 'p_name': '', 'race': '', 'class': '', 'background': '', 'subrace': '', 'alignment': '',
                  'weight': '', 'height': '', 'age': 0, 'level': 0, 'exp': 0, 'expneeded': 0, 'personalitytraits': '',
-                 'ideals': '', 'bonds': '', 'flaws': ''}
+                 'ideals': '', 'bonds': '', 'flaws': '', 'eyes': '', 'skin': '', 'hair': '', 'deity': '',
+                 'backstory': '', 'allies': ''}
     c['abilities'] = {'str': 0, 'dex': 0, 'con': 0, 'int': 0, 'wis': 0, 'cha': 0, 'prof': 0, 'strmod': 0, 'dexmod': 0,
                       'conmod': 0, 'intmod': 0, 'wismod': 0, 'chamod': 0}
     c['skills'] = {'acrobatics': {'mod': 0, 'prof': False}, 'animalhandling': {'mod': 0, 'prof': False},
                    'arcana': {'mod': 0, 'prof': False}, 'athletics': {'mod': 0, 'prof': False},
                    'deception': {'mod': 0, 'prof': False}, 'history': {'mod': 0, 'prof': False},
                    'insight': {'mod': 0, 'prof': False}, 'intimidation': {'mod': 0, 'prof': False},
-                   'investigation': {'mod': 0, 'prof': False}, 'medicine': {'mod': 0, 'prof': False},
-                   'nature': {'mod': 0, 'prof': False}, 'perception': {'mod': 0, 'prof': False},
+                   'investigation': {'mod': 0, 'prof': False, 'pass': 10}, 'medicine': {'mod': 0, 'prof': False},
+                   'nature': {'mod': 0, 'prof': False}, 'perception': {'mod': 0, 'prof': False, 'pass': 10},
                    'performance': {'mod': 0, 'prof': False}, 'persuasion': {'mod': 0, 'prof': False},
                    'religion': {'mod': 0, 'prof': False}, 'sleightofhand': {'mod': 0, 'prof': False},
                    'stealth': {'mod': 0, 'prof': False}, 'survival': {'mod': 0, 'prof': False}}
@@ -409,7 +424,7 @@ def design_blank_character():
     c['languages'] = []
     c['spells'] = {'cantrips': [], 'level1': [], 'level2': [], 'level3': [], 'level4': [], 'level5': [], 'level6': [],
                    'level7': [], 'level8': [], 'level9': [], 'atk': 0, 'dc': 0, 'l0': 0, 'l1': 0, 'l2': 0, 'l3': 0,
-                   'l4': 0, 'l5': 0, 'l6': 0, 'l7': 0, 'l8': 0, 'l9': 0, 'stat': '', 'prep': 0}
+                   'l4': 0, 'l5': 0, 'l6': 0, 'l7': 0, 'l8': 0, 'l9': 0, 'stat': '', 'prep': 0, 'class': ''}
     return c
 
 

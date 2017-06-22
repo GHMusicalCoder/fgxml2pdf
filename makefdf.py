@@ -386,5 +386,272 @@ def build_type2_fields(char):
     return list(data)
 
 
+def build_type1_fields(char):
+    data = []
+
+    # info section
+    data.append(('CharacterName', char['info']['name']))
+    data.append(('CharacterName 2', char['info']['name']))
+    data.append(('PlayerName', char['info']['p_name']))
+    if char['info']['subrace'] != '':
+        data.append(('Race ', char['info']['race'] + ' (' + char['info']['subrace'] + ')'))
+    else:
+        data.append(('Race ', char['info']['race']))
+    data.append(('ClassLevel', char['info']['class'] + ' ' + str(char['info']['level'])))
+    data.append(('Background', char['info']['background']))
+    data.append(('Bonds', char['info']['bonds']))
+    data.append(('Age', str(char['info']['age'])))
+    data.append(('Height', char['info']['height']))
+    data.append(('Weight', char['info']['height']))
+    data.append(('Eyes', char['info']['eyes']))
+    data.append(('Skin', char['info']['skin']))
+    data.append(('Hair', char['info']['hair']))
+    data.append(('Backstory', char['info']['backstory']))
+    data.append(('Flaws', char['info']['flaws']))
+    data.append(('Ideals', char['info']['ideals']))
+    data.append(('PersonalityTraits ', char['info']['personalitytraits']))
+    data.append(('Alignment', char['info']['alignment']))
+    data.append(('FactionName', char['info']['deity']))
+    data.append(('Allies', char['info']['allies']))
+    data.append(('XP', str(char['info']['exp']) + '/' + str(char['info']['expneeded'])))
+
+    # abilities section
+    data.append(('STR', str(char['abilities']['str'])))
+    data.append(('STRmod', '+' + str(char['abilities']['strmod'])))
+    data.append(('DEX', str(char['abilities']['dex'])))
+    data.append(('DEXmod ', '+' + str(char['abilities']['dexmod'])))
+    data.append(('CON', str(char['abilities']['con'])))
+    data.append(('CONmod', '+' + str(char['abilities']['conmod'])))
+    data.append(('INT', str(char['abilities']['int'])))
+    data.append(('INTmod', '+' + str(char['abilities']['intmod'])))
+    data.append(('WIS', str(char['abilities']['wis'])))
+    data.append(('WISmod', '+' + str(char['abilities']['wismod'])))
+    data.append(('CHA', str(char['abilities']['cha'])))
+    data.append(('CHamod', '+' + str(char['abilities']['chamod'])))
+    data.append(('ProfBonus', '+' + str(char['abilities']['prof'])))
+
+    # skills section
+    data.append(('Acrobatics', '+' + str(char['skills']['acrobatics']['mod'])))
+    if char['skills']['acrobatics']['prof']:
+        data.append(('Check Box 23', 'Yes'))
+    data.append(('Animal', '+' + str(char['skills']['animalhandling']['mod'])))
+    if char['skills']['animalhandling']['prof']:
+        data.append(('Check Box 24', 'Yes'))
+    data.append(('Arcana', '+' + str(char['skills']['arcana']['mod'])))
+    if char['skills']['arcana']['prof']:
+        data.append(('Check Box 25', 'Yes'))
+    data.append(('Athletics', '+' + str(char['skills']['athletics']['mod'])))
+    if char['skills']['athletics']['prof']:
+        data.append(('Check Box 26', 'Yes'))
+    data.append(('Deception ', '+' + str(char['skills']['deception']['mod'])))
+    if char['skills']['deception']['prof']:
+        data.append(('Check Box 27', 'Yes'))
+    data.append(('History ', '+' + str(char['skills']['history']['mod'])))
+    if char['skills']['history']['prof']:
+        data.append(('Check Box 28', 'Yes'))
+    data.append(('Insight', '+' + str(char['skills']['insight']['mod'])))
+    if char['skills']['insight']['prof']:
+        data.append(('Check Box 29', 'Yes'))
+    data.append(('Intimidation', '+' + str(char['skills']['intimidation']['mod'])))
+    if char['skills']['intimidation']['prof']:
+        data.append(('Check Box 30', 'Yes'))
+    data.append(('Investigation ', '+' + str(char['skills']['investigation']['mod'])))
+    if char['skills']['investigation']['prof']:
+        data.append(('Check Box 31', 'Yes'))
+    data.append(('Medicine', '+' + str(char['skills']['medicine']['mod'])))
+    if char['skills']['medicine']['prof']:
+        data.append(('Check Box 32', 'Yes'))
+    data.append(('Nature', '+' + str(char['skills']['nature']['mod'])))
+    if char['skills']['nature']['prof']:
+        data.append(('Check Box 33', 'Yes'))
+    data.append(('Perception ', '+' + str(char['skills']['perception']['mod'])))
+    if char['skills']['perception']['prof']:
+        data.append(('Check Box 34', 'Yes'))
+    data.append(('Performance', '+' + str(char['skills']['performance']['mod'])))
+    if char['skills']['performance']['prof']:
+        data.append(('Check Box 35', 'Yes'))
+    data.append(('Persuasion', '+' + str(char['skills']['persuasion']['mod'])))
+    if char['skills']['persuasion']['prof']:
+        data.append(('Check Box 36', 'Yes'))
+    data.append(('Religion', '+' + str(char['skills']['religion']['mod'])))
+    if char['skills']['religion']['prof']:
+        data.append(('Check Box 37', 'Yes'))
+    data.append(('SleightofHand', '+' + str(char['skills']['sleightofhand']['mod'])))
+    if char['skills']['sleightofhand']['prof']:
+        data.append(('Check Box 38', 'Yes'))
+    data.append(('Stealth ', '+' + str(char['skills']['stealth']['mod'])))
+    if char['skills']['stealth']['prof']:
+        data.append(('Check Box 39', 'Yes'))
+    data.append(('Survival', '+' + str(char['skills']['survival']['mod'])))
+    if char['skills']['survival']['prof']:
+        data.append(('Check Box 40', 'Yes'))
+    data.append(('Passive', str(char['skills']['perception']['pass'])))
+
+    # health section
+    data.append(('HPMax', str(char['health']['max_hp'])))
+    temp = ''
+    if char['health']['d6'] > 0:
+        temp += str(char['health']['d6']) + 'd6'
+    if char['health']['d8'] > 0:
+        if temp != '':
+            temp += '/'
+        temp += str(char['health']['d8']) + 'd8'
+    if char['health']['d10'] > 0:
+        if temp != '':
+            temp += '/'
+        temp += str(char['health']['d10']) + 'd10'
+    if char['health']['d12'] > 0:
+        if temp != '':
+            temp += '/'
+        temp += str(char['health']['d12']) + 'd12'
+    data.append(('HDTotal', temp))
+
+    # defense section
+    data.append(('AC', str(char['defense']['ac'])))
+    data.append(('ST Strength', '+' + str(char['defense']['str_save']['mod'])))
+    if char['defense']['str_save']['prof']:
+        data.append(('Check Box 11', 'Yes'))
+    data.append(('ST Dexterity', '+' + str(char['defense']['dex_save']['mod'])))
+    if char['defense']['dex_save']['prof']:
+        data.append(('Check Box 18', 'Yes'))
+    data.append(('ST Constitution', '+' + str(char['defense']['con_save']['mod'])))
+    if char['defense']['con_save']['prof']:
+        data.append(('Check Box 19', 'Yes'))
+    data.append(('ST Intelligence', '+' + str(char['defense']['int_save']['mod'])))
+    if char['defense']['int_save']['prof']:
+        data.append(('Check Box 20', 'Yes'))
+    data.append(('ST Wisdom', '+' + str(char['defense']['wis_save']['mod'])))
+    if char['defense']['wis_save']['prof']:
+        data.append(('Check Box 21', 'Yes'))
+    data.append(('ST Charisma', '+' + str(char['defense']['cha_save']['mod'])))
+    if char['defense']['cha_save']['prof']:
+        data.append(('Check Box 22', 'Yes'))
+
+    # combat section
+    data.append(('Initiative', '+' + str(char['combat']['init'])))
+    data.append(('Speed', str(char['combat']['speed'])))
+
+    # weapons section
+    temp, attkextra = '', ''
+    data.append(('Wpn Name', char['weapons']['weapon1']['name']))
+    data.append(('Wpn1 AtkBonus', '+' + str(char['weapons']['weapon1']['hit'])))
+    if char['weapons']['weapon1']['range'] != '':
+        temp = ' *'
+        attkextra += '* ' + char['weapons']['weapon1']['range'] + ' - ' + char['weapons']['weapon1']['prop'] + '\n'
+    data.append(('Wpn1 Damage', char['weapons']['weapon1']['dmg'] + ' ' + char['weapons']['weapon1']['type'] + temp))
+
+    data.append(('Wpn Name 2', char['weapons']['weapon2']['name']))
+    data.append(('Wpn2 AtkBonus ', '+' + str(char['weapons']['weapon2']['hit'])))
+    if char['weapons']['weapon2']['range'] != '':
+        temp = ' ^'
+        attkextra += '^ ' + char['weapons']['weapon2']['range'] + ' - ' + char['weapons']['weapon2']['prop'] + '\n'
+    data.append(('Wpn2 Damage ', char['weapons']['weapon2']['dmg'] + ' ' + char['weapons']['weapon2']['type'] + temp))
+
+    data.append(('Wpn Name 3', char['weapons']['weapon3']['name']))
+    data.append(('Wpn3 AtkBonus  ', '+' + str(char['weapons']['weapon3']['hit'])))
+    if char['weapons']['weapon3']['range'] != '':
+        temp = ' #'
+        attkextra += '# ' + char['weapons']['weapon3']['range'] + ' - ' + char['weapons']['weapon3']['prop'] + '\n'
+    data.append(('Wpn3 Damage ', char['weapons']['weapon3']['dmg'] + ' ' + char['weapons']['weapon3']['type'] + temp))
+    data.append(('AttacksSpellcasting', attkextra))
+
+    # features section
+    data.append(('Features and Traits', '\n'.join(char['features'])))
+
+    # inventory section
+    inv = []
+    line = char['inventory']['items'][0] if len(char['inventory']['items']) > 0 else ""
+    for i in range(1, len(char['inventory']['items'])):
+        if (3 + len(line) + len(char['inventory']['items'][i])) < 26:
+            line += ' / ' + char['inventory']['items'][i]
+        else:
+            inv.append(line)
+            line = char['inventory']['items'][i]
+    data.append(('Equipment', '\n'.join(inv)))
+
+    # money
+    data.append(('CP', str(char['monies']['CP'])))
+    data.append(('SP', str(char['monies']['SP'])))
+    data.append(('EP', str(char['monies']['EP'])))
+    data.append(('GP', str(char['monies']['GP'])))
+    data.append(('PP', str(char['monies']['PP'])))
+
+    # profs
+    temp = ''
+    temp += '\n'.join(char['armor_prof'])
+    temp += '\n' + '\n'.join(char['weapon_prof'])
+    temp += '\n' + '\n'.join(char['tool_prof'])
+    temp += '\n' + '\n'.join(char['languages'])
+    data.append(('ProficienciesLang', temp))
+
+    # spells
+    if char['spells']['stat'] != '':
+        data.append(('Spellcasting Class 2', char['spells']['class']))
+        data.append(('SpellcastingAbility 2', char['spells']['stat'].upper()))
+        data.append(('SpellSaveDC  2', str(char['spells']['dc'])))
+        data.append(('SpellAtkBonus 2', '+' + str(char['spells']['atk'])))
+        if char['spells']['l0'] > 0:
+            slot = 1016
+            for spell in char['spells']['cantrips']:
+                data.append(('Spells ' + str(slot), spell))
+                slot += 1
+        if char['spells']['l1'] > 0:
+            data.append(('SlotsTotal 19', str(char['spells']['l1'])))
+            slot = 1023
+            for spell in char['spells']['level1']:
+                data.append(('Spells ' + str(slot), spell))
+                slot += 1
+        if char['spells']['l2'] > 0:
+            data.append(('SlotsTotal 20', str(char['spells']['l2'])))
+            slot = 1034
+            for spell in char['spells']['level2']:
+                data.append(('Spells ' + str(slot), spell))
+                slot += 1
+        if char['spells']['l3'] > 0:
+            data.append(('SlotsTotal 21', str(char['spells']['l3'])))
+            slot = 1047
+            for spell in char['spells']['level3']:
+                data.append(('Spells ' + str(slot), spell))
+                slot += 1
+        if char['spells']['l4'] > 0:
+            data.append(('SlotsTotal 22', str(char['spells']['l4'])))
+            slot = 1060
+            for spell in char['spells']['level4']:
+                data.append(('Spells ' + str(slot), spell))
+                slot += 1
+        if char['spells']['l5'] > 0:
+            data.append(('SlotsTotal 23', str(char['spells']['l5'])))
+            slot = 1073
+            for spell in char['spells']['level5']:
+                data.append(('Spells ' + str(slot), spell))
+                slot += 1
+        if char['spells']['l6'] > 0:
+            data.append(('SlotsTotal 24', str(char['spells']['l6'])))
+            slot = 1082
+            for spell in char['spells']['level6']:
+                data.append(('Spells ' + str(slot), spell))
+                slot += 1
+        if char['spells']['l7'] > 0:
+            data.append(('SlotsTotal 25', str(char['spells']['l7'])))
+            slot = 1091
+            for spell in char['spells']['level7']:
+                data.append(('Spells ' + str(slot), spell))
+                slot += 1
+        if char['spells']['l8'] > 0:
+            data.append(('SlotsTotal 26', str(char['spells']['l8'])))
+            slot = 10100
+            for spell in char['spells']['level8']:
+                data.append(('Spells ' + str(slot), spell))
+                slot += 1
+        if char['spells']['l9'] > 0:
+            data.append(('SlotsTotal 27', str(char['spells']['l9'])))
+            slot = 10107
+            for spell in char['spells']['level9']:
+                data.append(('Spells ' + str(slot), spell))
+                slot += 1
+
+    return data
+
+
 if __name__ == '__main__':
     build_fdf([], 'none')

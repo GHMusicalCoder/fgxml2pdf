@@ -6,7 +6,7 @@ from loaddata import load_name_data
 from collections import defaultdict
 
 
-def process_xml_file(file):
+def process_xml_file(file, dataloc):
     character = design_blank_character()
 
     xml = ET.parse(file)
@@ -68,7 +68,7 @@ def process_xml_file(file):
         elif node.tag == 'traitlist':
             populate_traits(node, character['features'])
 
-    character['info']['p_name'] = get_player_name('charname.txt', character['info']['name'])
+    character['info']['p_name'] = get_player_name(dataloc, character['info']['name'])
     populate_weapon_modifiers(character)
     populate_spell_info(character)
     return character
@@ -302,8 +302,8 @@ def populate_abilities(tree, char):
                     char['defense'][save]['prof'] = True
 
 
-def get_player_name(file, name):
-    players = load_name_data(file)
+def get_player_name(loc, name):
+    players = load_name_data(loc)
     for c, p in players:
         if name.lower() == c:
             return p
@@ -429,4 +429,4 @@ def design_blank_character():
 
 
 if __name__ == '__main__':
-    pull_xml()
+    process_xml_file()

@@ -11,7 +11,7 @@ def build_fdf(fields, filename):
         print("error in buildfdf - fields were empty and filename was none")
 
 
-def build_type2_fields(char):
+def build_perkins_fieldset(char):
     data = []
     # section 1 - character name and info
     data.append(('CHARACTER NAME', char['info']['name']))
@@ -386,7 +386,7 @@ def build_type2_fields(char):
     return list(data)
 
 
-def build_type1_fields(char):
+def build_wotc_fieldset(char):
     data = []
 
     # info section

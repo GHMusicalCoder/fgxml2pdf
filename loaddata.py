@@ -1,9 +1,9 @@
 import os
 
 
-def load_name_data(file):
+def load_name_data(location):
     players = []
-    filename = get_full_pathname(file)
+    filename = get_full_pathname(location, 'player_names.txt')
     if os.path.exists(filename):
         with open(filename) as fin:
             for entry in fin.readlines():
@@ -12,8 +12,8 @@ def load_name_data(file):
     return players
 
 
-def get_full_pathname(name):
-    return os.path.abspath(os.path.join('.', name))
+def get_full_pathname(loc, name):
+    return os.path.abspath(os.path.join('.', loc, name))
 
 
 if __name__ == '__main__':

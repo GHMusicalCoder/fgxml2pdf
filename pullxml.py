@@ -75,7 +75,7 @@ def process_xml_file(file, dataloc):
 
 
 def populate_spell_info(char):
-    stat = char['spells']['stat']
+    stat = char['spells']['stat'] if char['spells']['stat'] != '' else 'int'
     mod = char['abilities'][stat+'mod']
     mod += char['abilities']['prof']
     char['spells']['atk'] = mod
@@ -199,8 +199,11 @@ def populate_spellpower(tree, spells):
     for node in tree:               #id
         power = get_listed_items(node, 'name')
         if power == 'Spells':
-            spells['prep'] = int(get_listed_items(node, 'prepared'))
-            spells['stat'] = get_listed_items(node, 'stat')[0:3]
+            for item in node:
+                if item.tag == 'prepared':
+                    spells['prep'] = int(item.text)
+                if item.tag == 'stat':
+                    spells['stat'] = item.text[0:3]
 
 
 def populate_languages(tree, langs):
@@ -422,7 +425,7 @@ def design_blank_character():
     c['weapon_prof'] = []
     c['tool_prof'] = []
     c['languages'] = []
-    c['spells'] = {'cantrips': [], 'level1': [], 'level2': [], 'level3': [], 'level4': [], 'level5': [], 'level6': [],
+    c['spells'] = {'level0': [], 'level1': [], 'level2': [], 'level3': [], 'level4': [], 'level5': [], 'level6': [],
                    'level7': [], 'level8': [], 'level9': [], 'atk': 0, 'dc': 0, 'l0': 0, 'l1': 0, 'l2': 0, 'l3': 0,
                    'l4': 0, 'l5': 0, 'l6': 0, 'l7': 0, 'l8': 0, 'l9': 0, 'stat': '', 'prep': 0, 'class': ''}
     return c

@@ -314,9 +314,9 @@ def build_perkins_fieldset(char):
     data.append(('l9', str(char['spells']['l9'])))
 
     # cantrips
-    if len(char['spells']['cantrips']) > 0:
+    if len(char['spells']['level0']) > 0:
         placard = 1
-        for spell in char['spells']['cantrips']:
+        for spell in char['spells']['level0']:
             data.append((str(placard), spell))
             placard += 1
 
@@ -578,10 +578,14 @@ def build_wotc_fieldset(char):
 
     # profs
     temp = ''
-    temp += '\n'.join(char['armor_prof'])
-    temp += '\n' + '\n'.join(char['weapon_prof'])
-    temp += '\n' + '\n'.join(char['tool_prof'])
-    temp += '\n' + '\n'.join(char['languages'])
+    temp += 'Armor Proficiencies:\n'
+    temp += ' * '.join(char['armor_prof'])
+    temp += '\n\nWeapon Proficiencies:\n'
+    temp += ' * '.join(char['weapon_prof'])
+    temp += '\n\nTool Proficiencies\n'
+    temp += ' * '.join(char['tool_prof'])
+    temp += '\n\nLanguages:\n'
+    temp += ' * '.join(char['languages'])
     data.append(('ProficienciesLang', temp))
 
     # spells
@@ -592,7 +596,7 @@ def build_wotc_fieldset(char):
         data.append(('SpellAtkBonus 2', '+' + str(char['spells']['atk'])))
         if char['spells']['l0'] > 0:
             slot = 1016
-            for spell in char['spells']['cantrips']:
+            for spell in char['spells']['level0']:
                 data.append(('Spells ' + str(slot), spell))
                 slot += 1
         if char['spells']['l1'] > 0:

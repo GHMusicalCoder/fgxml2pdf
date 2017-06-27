@@ -17,8 +17,8 @@ def process_xml_file(file, dataloc):
         if node.tag == 'age' or node.tag == 'level' or node.tag == 'exp' or node.tag == 'expneeded':
             character['info'][node.tag] = int(node.text)
         elif node.tag == 'alignment' or node.tag == 'background' or node.tag == 'bonds' or node.tag == 'flaws' or \
-        node.tag == 'height' or node.tag == 'ideals' or node.tag == 'weight' or node.tag == 'personalitytraits' or \
-        node.tag == 'name' or node.tag == 'deity':
+        node.tag == 'height' or node.tag == 'ideals' or node.tag == 'weight' or node.tag == 'name' or \
+        node.tag == 'deity':
             character['info'][node.tag] = node.text
         elif node.tag == 'race':
             if '(' in node.text:
@@ -49,6 +49,8 @@ def process_xml_file(file, dataloc):
             populate_inventory(node, character)
         elif node.tag == 'languagelist':
             populate_languages(node, character['languages'])
+        elif node.tag == 'personalitytraits':
+            character['info']['personalitytraits'] = node.text.split('\\n')
         elif node.tag == 'powergroup':
             populate_spellpower(node, character['spells'])
         elif node.tag == 'powermeta':
@@ -382,7 +384,7 @@ def design_blank_character():
     c = defaultdict(dict)
     # build character info section
     c['info'] = {'name': '', 'p_name': '', 'race': '', 'class': '', 'background': '', 'subrace': '', 'alignment': '',
-                 'weight': '', 'height': '', 'age': 0, 'level': 0, 'exp': 0, 'expneeded': 0, 'personalitytraits': '',
+                 'weight': '', 'height': '', 'age': 0, 'level': 0, 'exp': 0, 'expneeded': 0, 'personalitytraits': [],
                  'ideals': '', 'bonds': '', 'flaws': '', 'eyes': '', 'skin': '', 'hair': '', 'deity': '',
                  'backstory': '', 'allies': ''}
     c['abilities'] = {'str': 0, 'dex': 0, 'con': 0, 'int': 0, 'wis': 0, 'cha': 0, 'prof': 0, 'strmod': 0, 'dexmod': 0,
